@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Skill Issue - A VS Code extension that plays a hilarious meme sound when your tests fail. Because a failed test is never the code's fault; it's a Skill Issue.">
+    <meta name="keywords" content="VS Code extension, test failure, meme sound, developer tools, productivity, testing, npm test, jest, vitest">
+    <meta name="author" content="GxAditya">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gxaditya.github.io/skill-issue/">
+    <meta property="og:title" content="Skill Issue - VS Code Extension for Test Failures">
+    <meta property="og:description" content="A VS Code extension that plays a hilarious meme sound when your tests fail. Because it's never the code's fault.">
+    <meta property="og:image" content="https://gxaditya.github.io/skill-issue/media/faah.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://gxaditya.github.io/skill-issue/">
+    <meta name="twitter:title" content="Skill Issue - VS Code Extension">
+    <meta name="twitter:description" content="A VS Code extension that plays a hilarious meme sound when your tests fail.">
+    <meta name="twitter:image" content="https://gxaditya.github.io/skill-issue/media/faah.png">
+    
+    <title>Skill Issue - VS Code Extension | Play Meme Sound on Test Failure</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff006e;
+            --secondary: #8338ec;
+            --accent: #ffbe0b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --text: #e8e8f0;
+            --text-muted: #6b6b80;
+            --glow: rgba(255, 0, 110, 0.6);
+            --gradient-1: linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%);
+            --gradient-2: linear-gradient(45deg, #ffbe0b, #ff006e);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 110, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 110, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            right: -200px;
+            background: var(--primary);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            left: -200px;
+            background: var(--secondary);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, 50px) scale(1.1); }
+            66% { transform: translate(-30px, 20px) scale(0.9); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 0, 110, 0.1);
+        }
+
+        .logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 0, 110, 0.1);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        .hero-badge::before {
+            content: '🎮';
+        }
+
+        .hero-logo {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 2rem;
+            animation: logoFloat 3s ease-in-out infinite, fadeInUp 0.8s ease 0.1s forwards;
+            opacity: 0;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 110, 0.5));
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        .hero h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero h1 .highlight {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        .hero-subtitle .emphasis {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 0, 110, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sound {
+            background: rgba(255, 190, 11, 0.1);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .btn-sound:hover {
+            background: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        .btn-sound.playing {
+            animation: pulse 0.5s ease infinite;
+        }
+
+        .btn-download {
+            background: rgba(131, 56, 236, 0.1);
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-download:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch-1 2s infinite linear alternate-reverse;
+            color: var(--primary);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch-2 3s infinite linear alternate-reverse;
+            color: var(--secondary);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(30% 0 40% 0); transform: translate(2px, -2px); }
+            40% { clip-path: inset(60% 0 20% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 2px); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { clip-path: inset(95% 0 0 0); transform: translate(2px, -2px); }
+            20% { clip-path: inset(40% 0 30% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(20% 0 60% 0); transform: translate(2px, -2px); }
+            60% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 2px); }
+            80% { clip-path: inset(70% 0 10% 0); transform: translate(2px, -2px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 0, 110, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 0, 110, 0.1);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Installation Section */
+        .installation {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+            background: rgba(255, 0, 110, 0.02);
+        }
+
+        .install-steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .install-step {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .step-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            overflow-x: auto;
+        }
+
+        /* Config Table */
+        .config-section {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+        }
+
+        .config-table {
+            max-width: 900px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        .config-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .config-table th,
+        .config-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .config-table th {
+            background: rgba(255, 0, 110, 0.1);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .config-table td {
+            font-size: 0.9rem;
+        }
+
+        .config-table code {
+            background: rgba(255, 190, 11, 0.1);
+            color: var(--accent);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .config-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .config-table tr:hover td {
+            background: rgba(255, 0, 110, 0.03);
+        }
+
+        /* Troubleshooting Section */
+        .troubleshooting {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+        }
+
+        .troubleshoot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .troubleshoot-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 190, 11, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .troubleshoot-card:hover {
+            border-color: rgba(255, 190, 11, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .troubleshoot-icon {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .troubleshoot-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent);
+        }
+
+        .troubleshoot-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .troubleshoot-card code {
+            background: rgba(255, 190, 11, 0.1);
+            color: var(--accent);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .troubleshoot-card .code-block {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+        }
+
+        /* Demo Section */
+        .demo {
+            position: relative;
+            padding: 6rem 2rem;
+            z-index: 1;
+            background: rgba(131, 56, 236, 0.02);
+        }
+
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .demo-video-wrapper {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .demo-video-wrapper video {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .demo-placeholder {
+            padding: 4rem 2rem;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-placeholder-content {
+            color: var(--text-muted);
+        }
+
+        .demo-placeholder-content svg {
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .demo-placeholder-content p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .demo-placeholder-content span {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* CTA Section */
+        .cta {
+            position: relative;
+            padding: 6rem 2rem;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .cta-box {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 4rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 0, 110, 0.2);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--primary), transparent 30%);
+            animation: rotate 4s linear infinite;
+            opacity: 0.1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-box h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .cta-box p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .cta-box .btn {
+            position: relative;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .hero-logo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .install-step {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .config-table {
+                font-size: 0.8rem;
+            }
+
+            .config-table th,
+            .config-table td {
+                padding: 0.75rem 1rem;
+            }
+
+            .cta-box {
+                padding: 2rem;
+            }
+        }
+
+        /* Scroll animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+    </style>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Skill Issue",
+        "description": "A VS Code extension that plays a hilarious meme sound when your tests fail. Because a failed test is never the code's fault; it's a Skill Issue.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "GxAditya"
+        },
+        "screenshot": "https://gxaditya.github.io/skill-issue/media/faah.png",
+        "softwareVersion": "1.0.0",
+        "requirements": "VS Code 1.85.0 or higher, Node.js 18+"
+    }
+    </script>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">
+            <img src="../media/faah.png" alt="Skill Issue Logo" class="logo-icon">
+            SKILL ISSUE
+        </a>
+        <ul class="nav-links">
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#install">Install</a></li>
+            <li><a href="#config">Config</a></li>
+            <li><a href="#troubleshoot">Troubleshoot</a></li>
+            <li><a href="https://github.com/GxAditya/skill-issue" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="../media/faah.png" alt="Skill Issue Logo" class="hero-logo">
+        <h1>
+            <span class="glitch" data-text="SKILL ISSUE">SKILL ISSUE</span>
+        </h1>
+        <p class="hero-subtitle">
+            When your tests fail, it's <span class="emphasis">never</span> the code's fault. 
+            This extension plays a hilarious meme sound to remind you — it's just a skill issue.
+        </p>
+        <div class="hero-actions">
+            <a href="vscode:extension/GxAditya.skill-issue" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"/>
+                </svg>
+                Install Extension
+            </a>
+            <a href="https://github.com/GxAditya/skill-issue/releases/latest" class="btn btn-download" id="downloadVsix" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span id="downloadText">Download VSIX</span>
+            </a>
+            <button class="btn btn-sound" id="soundBtn" onclick="playSound()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+                Preview Sound
+            </button>
+            <a href="https://github.com/GxAditya/skill-issue" class="btn btn-secondary" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                View Source
+            </a>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="section-header animate-on-scroll">
+            <h2>See It In Action</h2>
+            <p>Watch the extension in action</p>
+        </div>
+        <div class="demo-container animate-on-scroll">
+            <div class="demo-video-wrapper">
+                <video id="demoVideo" controls poster="../media/faah.png">
+                    <source src="demo.mp4" type="video/mp4">
+                    <source src="demo.webm" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="demo-placeholder" id="demoPlaceholder">
+                    <div class="demo-placeholder-content">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                        </svg>
+                        <p>Demo video coming soon</p>
+                        <span>Upload your demo video as demo.mp4 or demo.webm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header animate-on-scroll">
+            <h2>Features</h2>
+            <p>Built for developers who appreciate a good laugh when things go wrong</p>
+        </div>
+        <div class="features-grid">
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">🎯</div>
+                <h3>Automatic Detection</h3>
+                <p>Uses VS Code's native Test API to automatically detect when your tests fail. No configuration needed for most frameworks.</p>
+            </article>
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">🔄</div>
+                <h3>Fallback Parser</h3>
+                <p>Terminal output parsing as a fallback for test frameworks that don't use the native API. Works with Jest, Vitest, Mocha, and more.</p>
+            </article>
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">⚙️</div>
+                <h3>Fully Customizable</h3>
+                <p>Configure your own audio file, adjust volume, set debounce delays, and customize the test command to watch.</p>
+            </article>
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">🌍</div>
+                <h3>Cross-Platform</h3>
+                <p>Works seamlessly on Windows, macOS, and Linux. Because skill issues are universal.</p>
+            </article>
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">🔊</div>
+                <h3>Custom Sounds</h3>
+                <p>Not a fan of the default? Drop in your own audio file and make test failures sound exactly how you want.</p>
+            </article>
+            <article class="feature-card animate-on-scroll">
+                <div class="feature-icon">⚡</div>
+                <h3>Zero Performance Impact</h3>
+                <p>Lightweight extension that only activates when needed. Won't slow down your development workflow.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="installation" id="install">
+        <div class="section-header animate-on-scroll">
+            <h2>Installation</h2>
+            <p>Get started in under a minute</p>
+        </div>
+        <div class="install-steps">
+            <div class="install-step animate-on-scroll">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Open VS Code Extensions</h3>
+                    <p>Press <code>Ctrl+Shift+X</code> on Windows/Linux or <code>Cmd+Shift+X</code> on macOS to open the Extensions panel.</p>
+                </div>
+            </div>
+            <div class="install-step animate-on-scroll">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Search for "Skill Issue"</h3>
+                    <p>Type "Skill Issue" in the search bar and look for the extension with the iconic logo.</p>
+                </div>
+            </div>
+            <div class="install-step animate-on-scroll">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Click Install</h3>
+                    <p>Hit the Install button and you're ready! The extension will automatically activate when you run tests.</p>
+                    <div class="code-block">code --install-extension GxAditya.skill-issue</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section class="config-section" id="config">
+        <div class="section-header animate-on-scroll">
+            <h2>Configuration</h2>
+            <p>Fine-tune the extension to match your workflow</p>
+        </div>
+        <div class="config-table animate-on-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>skill-issue.enabled</code></td>
+                        <td><code>true</code></td>
+                        <td>Enable or disable the extension globally</td>
+                    </tr>
+                    <tr>
+                        <td><code>skill-issue.audioPath</code></td>
+                        <td><code>media/faah.mp3</code></td>
+                        <td>Path to your custom audio file</td>
+                    </tr>
+                    <tr>
+                        <td><code>skill-issue.volume</code></td>
+                        <td><code>80</code></td>
+                        <td>Volume level from 0-100</td>
+                    </tr>
+                    <tr>
+                        <td><code>skill-issue.useNativeTestApi</code></td>
+                        <td><code>true</code></td>
+                        <td>Use VS Code's native Test API for detection</td>
+                    </tr>
+                    <tr>
+                        <td><code>skill-issue.testCommand</code></td>
+                        <td><code>npm test</code></td>
+                        <td>The test command to watch in terminal</td>
+                    </tr>
+                    <tr>
+                        <td><code>skill-issue.debounceDelay</code></td>
+                        <td><code>500</code></td>
+                        <td>Debounce delay in milliseconds</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Troubleshooting Section -->
+    <section class="troubleshooting" id="troubleshoot">
+        <div class="section-header animate-on-scroll">
+            <h2>Troubleshooting</h2>
+            <p>Common issues and how to fix them</p>
+        </div>
+        <div class="troubleshoot-grid">
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">🐧</div>
+                <h3>Linux Terminal Detection Issues</h3>
+                <p>On Linux, ensure your bash configuration allows <strong>rich shell integration</strong> for VS Code's integrated terminal. Without this, manual test runs via terminal will not be detected by the extension.</p>
+                <div class="code-block">Add to your ~/.bashrc:
+if [ "$TERM_PROGRAM" = "vscode" ]; then
+    # VS Code terminal integration
+    source ~/.vscode-server/data/extensions/*/dist/shellIntegration.sh 2>/dev/null
+fi</div>
+            </article>
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">🔇</div>
+                <h3>No Sound Playing</h3>
+                <p>Check that the <code>skill-issue.audioPath</code> setting points to a valid audio file. Ensure your system volume is up and the file format is supported (MP3, WAV, OGG).</p>
+            </article>
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">⚠️</div>
+                <h3>Tests Not Detected</h3>
+                <p>Make sure your test framework is supported. For frameworks not using VS Code's native Test API, enable terminal parsing by setting <code>skill-issue.useNativeTestApi</code> to <code>false</code>.</p>
+            </article>
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">🔄</div>
+                <h3>Multiple Sounds on Single Failure</h3>
+                <p>Increase the <code>skill-issue.debounceDelay</code> setting to prevent multiple triggers. A value of 500-1000ms usually works well.</p>
+            </article>
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">📁</div>
+                <h3>Custom Audio File Not Found</h3>
+                <p>Use an absolute path or a path relative to your workspace root. Avoid using <code>~</code> for home directory - use the full path instead.</p>
+            </article>
+            <article class="troubleshoot-card animate-on-scroll">
+                <div class="troubleshoot-icon">🚫</div>
+                <h3>Extension Not Activating</h3>
+                <p>Ensure you have VS Code 1.85.0 or higher and Node.js 18+. Try reloading the window with <code>Ctrl+Shift+P</code> → "Developer: Reload Window".</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-box animate-on-scroll">
+            <h2>Ready to embrace your skill issues?</h2>
+            <p>Install now and turn those test failures into moments of joy.</p>
+            <div class="cta-buttons">
+                <a href="vscode:extension/GxAditya.skill-issue" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"/>
+                    </svg>
+                    Install Extension
+                </a>
+                <a href="https://github.com/GxAditya/skill-issue/releases/latest" class="btn btn-download" id="downloadVsixCTA" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span id="downloadTextCTA">Download VSIX</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            Made with 💜 by <a href="https://github.com/GxAditya" target="_blank" rel="noopener">GxAditya</a> • 
+            <a href="https://github.com/GxAditya/skill-issue" target="_blank" rel="noopener">GitHub</a> • 
+            Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener">MIT</a>
+        </p>
+    </footer>
+
+    <!-- Audio Element -->
+    <audio id="faahSound" preload="auto">
+        <source src="../media/faah.mp3" type="audio/mpeg">
+        <source src="../media/faah.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        // Sound Preview
+        function playSound() {
+            const audio = document.getElementById('faahSound');
+            const btn = document.getElementById('soundBtn');
+            
+            if (audio.paused) {
+                audio.currentTime = 0;
+                audio.volume = 0.8;
+                audio.play();
+                btn.classList.add('playing');
+                
+                audio.onended = function() {
+                    btn.classList.remove('playing');
+                };
+            }
+        }
+
+        // Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fetch latest release for VSIX download
+        async function fetchLatestRelease() {
+            try {
+                const response = await fetch('https://api.github.com/repos/GxAditya/skill-issue/releases/latest');
+                const data = await response.json();
+                const vsixAsset = data.assets.find(asset => asset.name.endsWith('.vsix'));
+                
+                if (vsixAsset) {
+                    const downloadBtn = document.getElementById('downloadVsix');
+                    const downloadText = document.getElementById('downloadText');
+                    const downloadBtnCTA = document.getElementById('downloadVsixCTA');
+                    const downloadTextCTA = document.getElementById('downloadTextCTA');
+                    
+                    const version = data.tag_name.startsWith('v') ? data.tag_name : `v${data.tag_name}`;
+                    
+                    if (downloadBtn) downloadBtn.href = vsixAsset.browser_download_url;
+                    if (downloadText) downloadText.textContent = `Download ${version}`;
+                    if (downloadBtnCTA) downloadBtnCTA.href = vsixAsset.browser_download_url;
+                    if (downloadTextCTA) downloadTextCTA.textContent = `Download ${version}`;
+                }
+            } catch (error) {
+                console.log('Could not fetch latest release, using default link');
+            }
+        }
+
+        fetchLatestRelease();
+
+        // Demo video handling
+        const demoVideo = document.getElementById('demoVideo');
+        const demoPlaceholder = document.getElementById('demoPlaceholder');
+        
+        demoVideo.addEventListener('error', function() {
+            demoVideo.style.display = 'none';
+            demoPlaceholder.style.display = 'flex';
+        });
+        
+        demoVideo.addEventListener('loadeddata', function() {
+            demoPlaceholder.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

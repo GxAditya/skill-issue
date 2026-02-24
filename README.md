@@ -1,4 +1,15 @@
-# Skill Issue
+<div align="center">
+  <img src="media/faah.png" alt="Skill Issue Logo" width="200" height="200">
+  
+  # Skill Issue
+  
+  <a href="vscode:extension/GxAditya.skill-issue">
+    <img src="https://img.shields.io/badge/Install%20on%20VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white" alt="Install on VS Code">
+  </a>
+  <a href="https://github.com/GxAditya/skill-issue/releases/latest">
+    <img src="https://img.shields.io/badge/Download%20VSIX-8338EC?style=for-the-badge&logo=github&logoColor=white" alt="Download VSIX">
+  </a>
+</div>
 
 A VS Code extension that plays a hilarious meme sound when your tests fail. Because a failed test is never the code's fault; it's a Skill Issue.
 
@@ -38,7 +49,7 @@ Once installed, the extension automatically watches for test failures. When your
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
