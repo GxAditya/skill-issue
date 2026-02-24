@@ -579,7 +579,7 @@
             background: rgba(255, 0, 110, 0.03);
         }
 
-        /* Troubleshooting Section */
+        /* FAQ Section */
         .troubleshooting {
             position: relative;
             padding: 6rem 2rem;
@@ -587,45 +587,90 @@
         }
 
         .troubleshoot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        .troubleshoot-card {
+        .faq-item {
             background: var(--bg-card);
             border: 1px solid rgba(255, 190, 11, 0.1);
             border-radius: 12px;
-            padding: 1.5rem;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
-        .troubleshoot-card:hover {
+        .faq-item:hover {
             border-color: rgba(255, 190, 11, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .troubleshoot-icon {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+        .faq-item.active {
+            border-color: var(--accent);
         }
 
-        .troubleshoot-card h3 {
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: rgba(255, 190, 11, 0.05);
+        }
+
+        .faq-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            filter: invert(1) brightness(0.8);
+        }
+
+        .faq-question h3 {
+            flex: 1;
+            font-size: 0.95rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .faq-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--accent);
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
         }
 
-        .troubleshoot-card p {
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+        }
+
+        .faq-answer-content {
+            padding: 0 1.5rem 1.5rem 3.5rem;
             color: var(--text-muted);
             font-size: 0.85rem;
             line-height: 1.6;
         }
 
-        .troubleshoot-card code {
+        .faq-answer code {
             background: rgba(255, 190, 11, 0.1);
             color: var(--accent);
             padding: 0.15rem 0.4rem;
@@ -633,10 +678,14 @@
             font-size: 0.8rem;
         }
 
-        .troubleshoot-card .code-block {
+        .faq-answer .code-block {
             margin-top: 1rem;
             font-size: 0.75rem;
             white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            color: var(--text);
         }
 
         /* Demo Section */
@@ -1105,49 +1154,97 @@
         </div>
     </section>
 
-    <!-- Troubleshooting Section -->
+    <!-- FAQ Section -->
     <section class="troubleshooting" id="troubleshoot">
         <div class="section-header animate-on-scroll">
-            <h2>Troubleshooting</h2>
-            <p>Common issues and how to fix them</p>
+            <h2>FAQ</h2>
+            <p>Frequently asked questions and answers</p>
         </div>
         <div class="troubleshoot-grid">
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">🐧</div>
-                <h3>Linux Terminal Detection Issues</h3>
-                <p>On Linux, ensure your bash configuration allows <strong>rich shell integration</strong> for VS Code's integrated terminal. Without this, manual test runs via terminal will not be detected by the extension.</p>
-                <div class="code-block">Add to your ~/.bashrc:
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linux.svg" class="faq-icon" alt="Linux">
+                    <h3>Linux Terminal Detection Issues</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>On Linux, ensure your bash configuration allows <strong>rich shell integration</strong> for VS Code's integrated terminal. Without this, manual test runs via terminal will not be detected by the extension.</p>
+                        <div class="code-block">Add to your ~/.bashrc:
 if [ "$TERM_PROGRAM" = "vscode" ]; then
     # VS Code terminal integration
     source ~/.vscode-server/data/extensions/*/dist/shellIntegration.sh 2>/dev/null
 fi</div>
-            </article>
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">🔇</div>
-                <h3>No Sound Playing</h3>
-                <p>Check that the <code>skill-issue.audioPath</code> setting points to a valid audio file. Ensure your system volume is up and the file format is supported (MP3, WAV, OGG).</p>
-            </article>
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">⚠️</div>
-                <h3>Tests Not Detected</h3>
-                <p>Make sure your test framework is supported. For frameworks not using VS Code's native Test API, enable terminal parsing by setting <code>skill-issue.useNativeTestApi</code> to <code>false</code>.</p>
-            </article>
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">🔄</div>
-                <h3>Multiple Sounds on Single Failure</h3>
-                <p>Increase the <code>skill-issue.debounceDelay</code> setting to prevent multiple triggers. A value of 500-1000ms usually works well.</p>
-            </article>
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">📁</div>
-                <h3>Custom Audio File Not Found</h3>
-                <p>Use an absolute path or a path relative to your workspace root. Avoid using <code>~</code> for home directory - use the full path instead.</p>
-            </article>
-            <article class="troubleshoot-card animate-on-scroll">
-                <div class="troubleshoot-icon">🚫</div>
-                <h3>Extension Not Activating</h3>
-                <p>Ensure you have VS Code 1.85.0 or higher and Node.js 18+. Try reloading the window with <code>Ctrl+Shift+P</code> → "Developer: Reload Window".</p>
-            </article>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span class="faq-icon">🔊</span>
+                    <h3>No Sound Playing</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Check that the <code>skill-issue.audioPath</code> setting points to a valid audio file. Ensure your system volume is up and the file format is supported (MP3, WAV, OGG).</p>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/vitest.svg" class="faq-icon" alt="Test">
+                    <h3>Tests Not Detected</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Make sure your test framework is supported. For frameworks not using VS Code's native Test API, enable terminal parsing by setting <code>skill-issue.useNativeTestApi</code> to <code>false</code>.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span class="faq-icon">🔁</span>
+                    <h3>Multiple Sounds on Single Failure</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Increase the <code>skill-issue.debounceDelay</code> setting to prevent multiple triggers. A value of 500-1000ms usually works well.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span class="faq-icon">📂</span>
+                    <h3>Custom Audio File Not Found</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Use an absolute path or a path relative to your workspace root. Avoid using <code>~</code> for home directory - use the full path instead.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item animate-on-scroll">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/visualstudio.svg" class="faq-icon" alt="VS Code">
+                    <h3>Extension Not Activating</h3>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Ensure you have VS Code 1.85.0 or higher and Node.js 18+. Try reloading the window with <code>Ctrl+Shift+P</code> → "Developer: Reload Window".</p>
+                    </div>
+                </div>
+            </div>
         </div>
+        <script>
+            function toggleFaq(element) {
+                const faqItem = element.parentElement;
+                faqItem.classList.toggle('active');
+            }
+        </script>
     </section>
 
     <!-- CTA Section -->
