@@ -1,0 +1,118 @@
+{
+  "name": "skill-issue",
+  "displayName": "Skill Issue",
+  "publisher": "GxAditya",
+  "description": "Play a hilarious meme sound when your tests fail. Because a failed test is never the code's fault; it's a Skill Issue.",
+  "version": "1.0.0",
+  "icon": "media/faah.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GxAditya/skill-issue"
+  },
+  "bugs": {
+    "url": "https://github.com/GxAditya/skill-issue/issues"
+  },
+  "homepage": "https://github.com/GxAditya/skill-issue#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "test",
+    "fail",
+    "meme",
+    "sound",
+    "skill issue"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "skill-issue.toggle",
+        "title": "Toggle Skill Issue",
+        "category": "Skill Issue"
+      },
+      {
+        "command": "skill-issue.playTest",
+        "title": "Play Sound",
+        "category": "Skill Issue"
+      },
+      {
+        "command": "skill-issue.selectSound",
+        "title": "Select Custom Sound",
+        "category": "Skill Issue"
+      }
+    ],
+    "configuration": {
+      "title": "Skill Issue",
+      "properties": {
+        "skillIssue.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable the Skill Issue extension"
+        },
+        "skillIssue.volume": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Volume level (0.0 to 1.0)"
+        },
+        "skillIssue.useTestExplorerApi": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use VS Code Test Explorer API to detect test failures"
+        },
+        "skillIssue.useTerminalDetection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use terminal/task detection to detect test failures"
+        },
+        "skillIssue.cooldownMs": {
+          "type": "number",
+          "default": 2000,
+          "description": "Cooldown period in milliseconds to prevent duplicate sounds"
+        },
+        "skillIssue.customAudioPath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null,
+          "description": "Path to a custom audio file. Leave empty for default Skill Issue sound."
+        },
+        "skillIssue.showStatusBarMessage": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a brief '😤 Skill Issue!' message in the status bar on failure"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "vsce package",
+    "lint": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.19.8",
+    "jest": "^30.2.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "play-sound": "^1.1.6"
+  }
+}
